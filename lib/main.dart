@@ -1,12 +1,19 @@
 import 'package:calculator_app/calculator_view.dart';
+import 'package:calculator_app/calculator.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const CalculatorApp());
+  final calculator = Calculator();
+
+  runApp(CalculatorApp(
+    calculator: calculator,
+  ));
 }
 
 class CalculatorApp extends StatelessWidget {
-  const CalculatorApp({super.key});
+  final Calculator calculator;
+
+  const CalculatorApp({required this.calculator});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +23,7 @@ class CalculatorApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       debugShowCheckedModeBanner: true,
-      home: const CalculatorView(),
+      home: CalculatorView(calculator: calculator),
     );
   }
 }
