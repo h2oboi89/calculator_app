@@ -12,7 +12,7 @@ class CalculatorView extends StatefulWidget {
 }
 
 class CalculatorViewState extends State<CalculatorView> {
-  String equation = "0";
+  String equation = "";
   String result = "0";
 
   late Calculator _calculator;
@@ -22,7 +22,18 @@ class CalculatorViewState extends State<CalculatorView> {
   }
 
   buttonPressed(String buttonText) {
-    switch (buttonText) {
+    var input = buttonText;
+
+    switch (input) {
+      case '÷':
+        input = '/';
+        break;
+      case 'x':
+        input = '*';
+        break;
+    }
+
+    switch (input) {
       case 'AC':
         _calculator.reset();
         break;
@@ -30,12 +41,14 @@ class CalculatorViewState extends State<CalculatorView> {
         _calculator.calculate();
         break;
       default:
-        _calculator.update(buttonText);
+        _calculator.update(input);
         break;
     }
 
     setState(() {
       equation = _calculator.equation;
+      equation = equation.replaceAll('*', 'x');
+      equation = equation.replaceAll('/', '÷');
       result = _calculator.result;
     });
   }
