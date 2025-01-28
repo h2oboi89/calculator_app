@@ -1,65 +1,283 @@
+import "package:calculator_app/stack.dart";
 import "package:math_expressions/math_expressions.dart";
 
-class Calculator {
-  String equation = "";
-  String result = "0";
-  String expression = "";
-  final Parser parser = Parser();
+enum CalculatorState {
+  initial, // initial state
+  a, // get first operand
+  transition,
+  b, // get second operand
+  result // have result
+}
 
-  void reset() {
-    equation = "";
-    result = "0";
-    expression = "";
+class Calculator {
+  final Stack<String> _stack = Stack<String>();
+  final Parser parser = Parser();
+  late String entry;
+  late double result;
+  late CalculatorState _state;
+
+  Calculator() {
+    _reset();
+  }
+
+  String get expression {
+    if (_stack.isEmpty) {
+      return "";
+    } else {
+      return '$_stack';
+    }
   }
 
   void update(String input) {
-    // FUTURE: redo: each operation initiates calculation
+    if (input == "C") {
+      _reset();
+      return;
+    }
 
-    if (input == "⌫") {
-      if (equation.isNotEmpty) {
-        equation = equation.substring(0, equation.length - 1);
-      }
-    } else if (input == "+/-") {
-      if (equation.isEmpty) {
-        return;
-      } else if (equation[0] != "-") {
-        equation = "-$equation";
-      } else {
-        equation = equation.substring(1);
-      }
+    if (input == "CE") {
+      _resetEntry();
+      return;
+    }
+
+    switch (_state) {
+      case CalculatorState.initial:
+        _updateStateInitial(input);
+        break;
+      case CalculatorState.a:
+        _updateStateA(input);
+        break;
+      case CalculatorState.transition:
+        _updateTransition(input);
+        break;
+      case CalculatorState.b:
+        _updateStateB(input);
+        break;
+      case CalculatorState.result:
+        _updateStateResult(input);
+        break;
+    }
+  }
+
+  void _reset() {
+    _resetState();
+    _resetEntry();
+  }
+
+  void _resetState() {
+    result = 0;
+    _stack.clear();
+    _state = CalculatorState.initial;
+  }
+
+  void _resetEntry() {
+    entry = "0";
+
+    if (_state == CalculatorState.result) {
+      _resetState();
+    }
+  }
+
+  void _updateStateInitial(String input) {
+    if (_isEquals(input)) {
+      _stack.push(entry);
+      _calculate();
+      return;
+    }
+
+    if (_isOperation(input)) {
+      _stack.push(entry);
+      _stack.push(input);
+      _state = CalculatorState.transition;
+      return;
+    }
+
+    _setEntry(input);
+    _state = CalculatorState.a;
+  }
+
+  void _updateStateA(String input) {
+    if (_isEquals(input)) {
+      _stack.push(entry);
+      _calculate();
+      return;
+    }
+
+    if (_isOperation(input)) {
+      _stack.push(entry);
+      _stack.push(input);
+      _state = CalculatorState.transition;
+      return;
+    }
+
+    _modifyEntry(input);
+  }
+
+  void _updateTransition(String input) {
+    if (_isEquals(input)) {
+      _stack.push(entry);
+      _calculate();
+      return;
+    }
+
+    if (_isOperation(input)) {
+      _stack.pop();
+      _stack.push(input);
+      return;
+    }
+
+    _setEntry(input);
+    _state = CalculatorState.b;
+  }
+
+  void _updateStateB(String input) {
+    if (_isEquals(input)) {
+      _stack.push(entry);
+      _calculate();
+      return;
+    }
+
+    if (_isOperation(input)) {
+      _stack.push(entry);
+      _calculate();
+      _stack.pop(); // '='
+      _state = CalculatorState.transition;
+      return;
+    }
+
+    _modifyEntry(input);
+  }
+
+  void _updateStateResult(String input) {
+    if (_isEquals(input)) {
+      _stack.pop(); // '='
+      var b = _stack.pop();
+      var op = _stack.pop();
+      _stack.pop(); // clear out previous a
+      _stack.push(entry);
+      _stack.push(op);
+      _stack.push(b);
+      _calculate();
+      return;
+    }
+
+    if (_isOperation(input)) {
+      _stack.clear();
+      _stack.push(entry);
+      _stack.push(input);
+      _state = CalculatorState.transition;
+      return;
+    }
+
+    _stack.clear();
+    _setEntry(input);
+    _state = CalculatorState.a;
+  }
+
+  void _setEntry(String input) {
+    switch (input) {
+      case "negate":
+        _modifyEntry(input);
+        break;
+      case ".":
+        entry = "0";
+        _addDecimal();
+        break;
+      case "⌫":
+        _backspace();
+        break;
+      default:
+        entry = input;
+    }
+  }
+
+  void _modifyEntry(String input) {
+    switch (input) {
+      case "negate":
+        _negate();
+        break;
+      case ".":
+        _addDecimal();
+        break;
+      case "⌫":
+        _backspace();
+        break;
+      default:
+        if (entry == "0") {
+          entry = input;
+        } else {
+          entry = entry + input;
+        }
+    }
+  }
+
+  void _negate() {
+    if (entry == "0") {
+      return;
+    }
+
+    if (entry[0] == "-") {
+      entry = entry.substring(1);
     } else {
-      if (equation == "") {
-        equation = input;
-      } else {
-        equation = equation + input;
-      }
+      entry = "-$entry";
     }
   }
 
-  void calculate() {
-    expression = equation;
+  void _addDecimal() {
+    if (_hasDecimal(entry)) {
+      return;
+    }
 
+    entry = "$entry.";
+  }
+
+  void _backspace() {
+    if (entry.length == 1) {
+      entry = "0";
+      return;
+    }
+
+    entry = entry.substring(0, entry.length - 1);
+  }
+
+  bool _isOperation(String value) {
+    switch (value) {
+      case '+':
+      case '-':
+      case '*':
+      case '/':
+      case '%':
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  bool _isEquals(String value) {
+    return value == "=";
+  }
+
+  bool _hasDecimal(String entry) {
+    return entry.contains(".");
+  }
+
+  void _calculate() {
     try {
+      var expression = "$_stack";
       var exp = parser.parse(expression);
-
       var cm = ContextModel();
-      result = "${exp.evaluate(EvaluationType.REAL, cm)}";
-      if (expression.contains("/")) {
-        result = _doesContainDecimal(result);
-      }
-    } catch (e) {
-      result = "Error";
-    }
-  }
 
-  // used to check if the result contains a decimal
-  String _doesContainDecimal(dynamic result) {
-    if (result.toString().contains(".")) {
-      var splitDecimal = result.toString().split(".");
-      if (!(int.parse(splitDecimal[1]) > 0)) {
-        return result = splitDecimal[0].toString();
+      result = exp.evaluate(EvaluationType.REAL, cm);
+
+      if (result.floor() == result) {
+        entry = "${result.toInt()}";
+      } else {
+        entry = "$result";
       }
+
+      _stack.push("=");
+      _state = CalculatorState.result;
+    } catch (e) {
+      result = 0;
     }
-    return result;
   }
 }
