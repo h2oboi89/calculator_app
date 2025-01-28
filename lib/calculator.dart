@@ -139,7 +139,9 @@ class Calculator {
     if (_isOperation(input)) {
       _stack.push(entry);
       _calculate();
-      _stack.pop(); // '='
+      _stack.clear();
+      _stack.push(entry);
+      _stack.push(input);
       _state = CalculatorState.transition;
       return;
     }
