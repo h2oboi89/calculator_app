@@ -1,10 +1,12 @@
 import "package:calculator_app/stack.dart";
 import "package:math_expressions/math_expressions.dart";
 
+// Initial and transition states exist to enable user input replacing the existing entry
+// instead of merely updating it like it does in state a and b
 enum CalculatorState {
   initial, // initial state
   a, // get first operand
-  transition,
+  transition, // a -> b
   b, // get second operand
   result // have result
 }

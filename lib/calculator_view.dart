@@ -36,7 +36,7 @@ class CalculatorViewState extends State<CalculatorView> {
 
     setState(() {
       entry = _calculator.entry;
-      expression = _calculator.expression;
+      expression = _calculator.expression.replaceAll('*', 'x').replaceAll('/', '÷');
     });
   }
 
