@@ -7,10 +7,18 @@ class Stack<E> {
   }
 
   E pop() {
+    if (isEmpty) {
+      throw RangeError('Cannot pop from an empty stack');
+    }
+
     return _storage.removeLast();
   }
 
   E peek() {
+    if (isEmpty) {
+      throw RangeError('Cannot peek an empty stack');
+    }
+    
     return _storage.last;
   }
 
