@@ -38,5 +38,57 @@ void main() {
       stack.clear();
       expect(stack.isEmpty, isTrue);
     });
+
+    test('push adds values to stack', () {
+      final stack = Stack<int>();
+
+      stack.push(1);
+      stack.push(2);
+
+      expect(stack.isEmpty, isFalse);
+      expect(stack.toString(), '1 2');
+    });
+
+    test('pop removes values from stack', () {
+      final stack = Stack<int>();
+
+      stack.push(1);
+      stack.push(2);
+
+      expect(stack.isEmpty, isFalse);
+      expect(stack.toString(), '1 2');
+
+      expect(stack.pop(), 2);
+      expect(stack.pop(), 1);
+      expect(stack.isEmpty, isTrue);
+    });
+
+    test('peek does not remove values from stack', () {
+      final stack = Stack<int>();
+
+      stack.push(1);
+      stack.push(2);
+
+      expect(stack.isEmpty, isFalse);
+      expect(stack.toString(), '1 2');
+
+      expect(stack.peek(), 2);
+      expect(stack.peek(), 2);
+      expect(stack.isNotEmpty, isTrue);
+    });
+
+    test('clear empties the stack', () {
+      final stack = Stack<int>();
+
+      stack.push(1);
+      stack.push(2);
+
+      expect(stack.isEmpty, isFalse);
+      expect(stack.toString(), '1 2');
+
+      stack.clear();
+
+      expect(stack.isEmpty, isTrue);
+    });
   });
 }

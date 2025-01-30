@@ -23,15 +23,6 @@ class CalculatorViewState extends State<CalculatorView> {
   buttonPressed(String buttonText) {
     var input = buttonText;
 
-    switch (input) {
-      case '÷':
-        input = '/';
-        break;
-      case 'x':
-        input = '*';
-        break;
-    }
-
     _calculator.update(input);
 
     setState(() {
@@ -120,7 +111,7 @@ class CalculatorViewState extends State<CalculatorView> {
                   calcButton('', Colors.black54, () => {}),
                   calcButton('', Colors.black54, () => {}),
                   calcButton('%', Colors.white10, () => buttonPressed('%')),
-                  calcButton('÷', Colors.white10, () => buttonPressed('÷')),
+                  calcButton('÷', Colors.white10, () => buttonPressed('/')),
                 ],
               ),
               const SizedBox(height: 10),
@@ -130,7 +121,7 @@ class CalculatorViewState extends State<CalculatorView> {
                   calcButton('7', Colors.white24, () => buttonPressed('7')),
                   calcButton('8', Colors.white24, () => buttonPressed('8')),
                   calcButton('9', Colors.white24, () => buttonPressed('9')),
-                  calcButton('x', Colors.white10, () => buttonPressed('x')),
+                  calcButton('x', Colors.white10, () => buttonPressed('*')),
                 ],
               ),
               const SizedBox(height: 10),

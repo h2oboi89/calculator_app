@@ -80,6 +80,8 @@ class Calculator {
   }
 
   void _updateStateInitial(String input) {
+    entry = "0";
+
     if (_isEquals(input)) {
       _stack.push(entry);
       _calculate();
@@ -281,7 +283,8 @@ class Calculator {
       _stack.push("=");
       _state = CalculatorState.result;
     } catch (e) {
-      result = 0;
+      _reset();
+      entry = "Error";
     }
   }
 }
