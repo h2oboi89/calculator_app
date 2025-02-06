@@ -5,5 +5,5 @@ COVERAGE_REPORT_TOOL := $(PACKAGE_ROOT)\reportgenerator\5.0.0\tools\net47\Report
 
 .PHONY: tdd
 tdd:
-	flutter test --coverage
+	flutter test --coverage --branch-coverage
 	$(COVERAGE_REPORT_TOOL) -reports:coverage\lcov.info -targetdir:coverage\report -reporttypes:Html

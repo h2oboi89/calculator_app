@@ -15,7 +15,6 @@ class Calculator {
   final Stack<String> _stack = Stack<String>();
   final Parser parser = Parser();
   late String entry;
-  late double result;
   late CalculatorState _state;
 
   Calculator() {
@@ -66,7 +65,6 @@ class Calculator {
   }
 
   void _resetState() {
-    result = 0;
     _stack.clear();
     _state = CalculatorState.initial;
   }
@@ -272,7 +270,7 @@ class Calculator {
       var exp = parser.parse(expression);
       var cm = ContextModel();
 
-      result = exp.evaluate(EvaluationType.REAL, cm);
+      final result = exp.evaluate(EvaluationType.REAL, cm);
 
       if (result.floor() == result) {
         entry = "${result.toInt()}";
