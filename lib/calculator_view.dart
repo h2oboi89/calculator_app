@@ -35,7 +35,6 @@ class CalculatorViewState extends State<CalculatorView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
         backgroundColor: Colors.black54,
         appBar: AppBar(
           elevation: 0,
