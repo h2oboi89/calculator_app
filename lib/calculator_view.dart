@@ -12,8 +12,8 @@ class CalculatorView extends StatefulWidget {
 }
 
 class CalculatorViewState extends State<CalculatorView> {
-  String entry = "0";
-  String expression = "";
+  String _entry = "0";
+  String _expression = "";
   late Calculator _calculator;
 
   CalculatorViewState(Calculator calculator) {
@@ -26,14 +26,16 @@ class CalculatorViewState extends State<CalculatorView> {
     _calculator.update(input);
 
     setState(() {
-      entry = _calculator.entry;
-      expression = _calculator.expression.replaceAll('*', 'x').replaceAll('/', '÷');
+      _entry = _calculator.entry;
+      _expression =
+          _calculator.expression.replaceAll('*', 'x').replaceAll('/', '÷');
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
         backgroundColor: Colors.black54,
         appBar: AppBar(
           elevation: 0,
@@ -63,7 +65,7 @@ class CalculatorViewState extends State<CalculatorView> {
                             children: <Widget>[
                               Padding(
                                   padding: const EdgeInsets.all(10.0),
-                                  child: Text(entry,
+                                  child: Text(_entry,
                                       textAlign: TextAlign.left,
                                       style: const TextStyle(
                                           color: Colors.white, fontSize: 80))),
@@ -77,20 +79,12 @@ class CalculatorViewState extends State<CalculatorView> {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.all(20),
-                                child: Text(expression,
+                                child: Text(_expression,
                                     style: const TextStyle(
                                       fontSize: 40,
                                       color: Colors.white38,
                                     )),
                               ),
-                              IconButton(
-                                icon: const Icon(Icons.backspace_outlined,
-                                    color: Colors.orange, size: 30),
-                                onPressed: () {
-                                  buttonPressed("⌫");
-                                },
-                              ),
-                              const SizedBox(width: 20),
                             ],
                           )
                         ],
